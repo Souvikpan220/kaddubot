@@ -178,50 +178,54 @@ app.post('/admin/clear-logs',async(req,res)=>{if(!isAdminAuth(req.headers['x-adm
 app.post('/admin/reset-all',async(req,res)=>{if(!isAdminAuth(req.headers['x-admin-token']||req.query.token))return res.json({e:'Unauthorized'});Object.keys(keyStorage).forEach(k=>{if(k!==MASTER_API_KEY)keyStorage[k].used=0});scheduleSave();res.json({success:true})});
 app.use((req,res)=>{res.json({error:'Not found'})});
 
-function renderLogin(){/* ... [Your existing renderLogin function code remains same] ... */ }
-function renderAdmin(token){/* ... [Your existing renderAdmin function code remains same] ... */ }
-function renderDocs(){/* ... [Your existing renderDocs function code remains same] ... */ }
+function renderLogin(){/* ... */ }
+function renderAdmin(token){/* ... */ }
+function renderDocs(){/* ... */ }
 
-function renderHome(){try{const vapis=customAPIs.filter(a=>a.visible&&a.endpoint);const totalEndpoints=Object.keys(endpoints).length+vapis.length;const totalKeys=Object.keys(keyStorage).filter(k=>!keyStorage[k]?.hidden).length;const epsJSON=JSON.stringify(endpoints).replace(/</g,'\\u003c');let cardsHTML='';Object.entries(endpoints).forEach(([n,e])=>{cardsHTML+=`<div class="ep" style="--ac:#8b00ff" onclick="cp('${esc(n)}','${esc(e.p)}','${esc(e.e)}')"><span>${e.i}</span><b>/${esc(n)}</b><small>${esc(e.d)}</small><code>${esc(e.p)}=${esc(e.e)}</code></div>`});vapis.forEach(a=>{cardsHTML+=`<div class="ep" style="--ac:#00c8ff" onclick="ccp('${esc(a.endpoint)}','${esc(a.param)}','${esc(a.example)}')"><span>🔧</span><b>/${esc(a.endpoint)}</b><small>${esc(a.desc||'Custom')}</small><code>${esc(a.param)}=${esc(a.example||'v')}</code></div>`});const opts=Object.entries(endpoints).map(([n,e])=>`<option value="${esc(n)}" data-p="${esc(e.p)}" data-ex="${esc(e.e)}">${e.i} /${esc(n)}</option>`).join('')+vapis.map(a=>`<option value="c_${a.id}" data-c="1" data-ep="${esc(a.endpoint)}" data-p="${esc(a.param)}" data-ex="${esc(a.example)}">🔧 /${esc(a.endpoint)}</option>`).join('');return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>MoonWitch OSINT V100 👑</title><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet"><style>
-:root{--bg:#06060c;--sur:#0d0d1a;--brd:rgba(139,0,255,.15);--txt:#e0e0f0;--acc:#8b00ff;--acc2:#00c8ff;--green:#00ff88;--red:#ff0080;--yellow:#ffaa00;--pink:#ff0080}
-*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--txt);font-family:'Rajdhani',sans-serif;overflow-x:hidden;font-size:14px}
-::selection{background:var(--acc);color:#fff}::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--acc)}
-.snow{position:fixed;inset:0;pointer-events:none;z-index:0}.snowflake{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;animation:fall linear infinite;opacity:0}
-@keyframes fall{0%{transform:translateY(-10vh);opacity:0}10%{opacity:0.7}90%{opacity:0.7}100%{transform:translateY(110vh);opacity:0}}
-.tb{position:sticky;top:0;z-index:1000;background:rgba(13,13,26,.9);border-bottom:1px solid var(--brd);padding:8px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;backdrop-filter:blur(30px)}
-.tb .logo{font-family:'Orbitron',sans-serif;font-size:14px;letter-spacing:4px;background:linear-gradient(90deg,var(--acc),var(--acc2),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900}
-.tb .ba{background:rgba(0,255,136,.1);color:var(--green);padding:4px 12px;border-radius:20px;font-size:9px;font-weight:700;border:1px solid rgba(0,255,136,.2);animation:glow 2s infinite}
-@keyframes glow{0%,100%{box-shadow:0 0 6px rgba(0,255,136,.2)}50%{box-shadow:0 0 18px rgba(0,255,136,.4)}}
-.tb a{color:#666;text-decoration:none;font-size:10px;font-weight:600;letter-spacing:1px;transition:.3s}.tb a:hover{color:var(--acc2)}
-.hero{text-align:center;padding:40px 20px 15px;position:relative;z-index:1}
-.hero h1{font-size:56px;font-weight:900;background:linear-gradient(90deg,var(--acc),var(--acc2),var(--pink),var(--green));background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:rb 4s linear infinite;font-family:'Orbitron',sans-serif;margin-bottom:4px}
-@keyframes rb{0%{background-position:0% 50%}100%{background-position:300% 50%}}
-.hero .sub{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:#666;margin-bottom:2px}
-.ct{max-width:1100px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
-.st{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:14px;margin-bottom:18px;background:rgba(13,13,26,.9);border:1px solid var(--brd);border-radius:14px}
-.st>div{text-align:center;min-width:60px}.st .v{font-size:26px;font-weight:900;background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Orbitron',sans-serif}
-.st .l{font-size:7px;color:#555;text-transform:uppercase;letter-spacing:2px}
-.pl{background:var(--sur);border:1px solid var(--brd);border-radius:12px;padding:16px;margin-bottom:18px}
-.pl h3{font-size:14px;font-weight:700;margin-bottom:10px;background:linear-gradient(135deg,var(--acc2),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.plf{display:flex;gap:8px;flex-wrap:wrap}.plf select,.plf input{flex:1;min-width:100px;padding:10px 12px;background:var(--bg);border:1px solid var(--brd);border-radius:7px;color:var(--txt);font-size:10px;font-family:monospace;outline:none}
-.plf select:focus,.plf input:focus{border-color:var(--acc)}.btx{padding:10px 18px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border:none;border-radius:7px;font-weight:700;font-size:10px;cursor:pointer;font-family:'Orbitron',sans-serif}
-.rb{margin-top:10px;background:#020210;border:1px solid var(--brd);border-radius:7px;padding:10px;max-height:250px;overflow:auto;font-family:monospace;font-size:8px;display:none;white-space:pre-wrap;color:var(--green)}
-.eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-bottom:18px}
-.ep{background:var(--sur);border:1px solid var(--brd);border-radius:10px;padding:14px;cursor:pointer;transition:.3s;border-top:3px solid var(--ac,#8b00ff)}
-.ep:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.4)}.ep span{font-size:18px;display:block;margin-bottom:2px}
-.ep b{font-size:14px;color:#fff;display:block;margin-bottom:2px}.ep small{font-size:9px;color:#666;display:block;margin-bottom:6px}
-.ep code{font-family:monospace;font-size:8px;color:var(--ac,#8b00ff);background:rgba(0,0,0,.3);padding:3px 5px;border-radius:3px}
-.ft{text-align:center;padding:20px;border-top:1px solid var(--brd);position:relative;z-index:1}
-.ft .fb{font-size:16px;font-weight:900;background:linear-gradient(90deg,var(--acc),var(--acc2),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Orbitron',sans-serif}
-.ft .fi{font-size:9px;color:#555;margin-top:2px}.ft .fi a{color:#666;text-decoration:none}
-@media(max-width:768px){.hero h1{font-size:30px}.eg{grid-template-columns:1fr}.plf{flex-direction:column}}
-</style></head><body><div class="snow" id="snow"></div><div class="tb"><a href="/" class="logo">⚡ MoonWitch V100</a><div style="display:flex;gap:10px;align-items:center"><a href="/docs">📚 DOCS</a><a href="/admin">🔐 ADMIN</a><span class="ba">✅ PAID API</span></div></div><header class="hero"><h1>MoonWitch OSINT V100</h1><p class="sub">ULTRA PRIME SUITE</p><p style="color:#555;font-size:10px;margin-top:4px">👑 King Always King 👑 · Unlimited · Real-Time · No Error</p></header><div class="ct"><div class="st"><div><div class="v">${totalEndpoints}</div><div class="l">ENDPOINTS</div></div><div><div class="v">${totalKeys}</div><div class="l">KEYS</div></div><div><div class="v">∞</div><div class="l">REQUESTS</div></div><div><div class="v">100%</div><div class="l">WORKING</div></div></div><div class="pl"><h3>🧪 API PLAYGROUND</h3><div class="plf"><select id="es"><option value="">Select Endpoint</option>${opts}</select><input id="ak" placeholder="API Key..."><input id="pv" placeholder="Parameter..."><button class="btx" onclick="ta()">⚡ RUN</button></div><div class="rb" id="rb"></div></div><div class="eg">${cardsHTML}</div></div><footer class="ft"><p class="fb">MoonWitch OSINT V100 👑</p><p class="fi">@MoonWitch · <a href="/admin">Admin</a> · <a href="/docs">API Docs</a> · <a href="/test">Status</a></p></footer><script>
+function renderHome(){try{const vapis=customAPIs.filter(a=>a.visible&&a.endpoint);const totalEndpoints=Object.keys(endpoints).length+vapis.length;const totalKeys=Object.keys(keyStorage).filter(k=>!keyStorage[k]?.hidden).length;const epsJSON=JSON.stringify(endpoints).replace(/</g,'\\u003c');let cardsHTML='';Object.entries(endpoints).forEach(([n,e])=>{cardsHTML+=`<div class="ep" style="--ac:#8b00ff" onclick="cp('${esc(n)}','${esc(e.p)}','${esc(e.e)}')"><span>${e.i}</span><b>/${esc(n)}</b><small>${esc(e.d)}</small><code>${esc(e.p)}=${esc(e.e)}</code></div>`});vapis.forEach(a=>{cardsHTML+=`<div class="ep" style="--ac:#00c8ff" onclick="ccp('${esc(a.endpoint)}','${esc(a.param)}','${esc(a.example)}')"><span>🔧</span><b>/${esc(a.endpoint)}</b><small>${esc(a.desc||'Custom')}</small><code>${esc(a.param)}=${esc(a.example||'v')}</code></div>`});const opts=Object.entries(endpoints).map(([n,e])=>`<option value="${esc(n)}" data-p="${esc(e.p)}" data-ex="${esc(e.e)}">${e.i} /${esc(n)}</option>`).join('')+vapis.map(a=>`<option value="c_${a.id}" data-c="1" data-ep="${esc(a.endpoint)}" data-p="${esc(a.param)}" data-ex="${esc(a.example)}">🔧 /${esc(a.endpoint)}</option>`).join('');return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>MoonWitch OSINT V100 👑</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#ffffff;color:#333333;font-family:Arial,sans-serif;font-size:16px;line-height:1.5}
+.tb{background:#f8f9fa;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #dee2e6}
+.tb .logo{font-size:20px;font-weight:bold;color:#000}
+.tb a{color:#555;text-decoration:none;font-size:16px;margin-left:20px}
+.hero{text-align:center;padding:40px 20px}
+.hero h1{font-size:32px;margin-bottom:10px}
+.ct{max-width:1000px;margin:0 auto;padding:20px}
+.st{display:flex;justify-content:center;gap:20px;margin-bottom:30px}
+.st>div{text-align:center;padding:20px;background:#f8f9fa;border:1px solid #dee2e6;border-radius:8px;flex:1}
+.st .v{font-size:24px;font-weight:bold}
+.st .l{font-size:14px;color:#777}
+.pl{background:#f8f9fa;border:1px solid #dee2e6;border-radius:8px;padding:20px;margin-bottom:30px}
+.pl h3{font-size:20px;margin-bottom:15px}
+.plf{display:flex;gap:10px;flex-wrap:wrap}
+.plf select,.plf input{flex:1;min-width:200px;padding:12px;border:1px solid #ccc;border-radius:5px;font-size:16px}
+.btx{padding:12px 25px;background:#0066cc;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:16px}
+.rb{margin-top:15px;background:#eee;padding:15px;border-radius:5px;font-family:monospace;font-size:14px;display:none;white-space:pre-wrap}
+.eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
+.ep{background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:15px;cursor:pointer;transition:0.2s}
+.ep:hover{border-color:#0066cc}
+.ep b{display:block;font-size:18px;margin-bottom:5px}
+.ep small{font-size:14px;color:#666;display:block;margin-bottom:8px}
+.ep code{font-family:monospace;font-size:13px;background:#f0f0f0;padding:2px 5px}
+.ft{text-align:center;padding:30px;border-top:1px solid #dee2e6;font-size:14px;color:#777}
+</style></head><body>
+<div class="tb"><div class="logo">MoonWitch OSINT V100</div><div><a href="/docs">DOCS</a><a href="/admin">ADMIN</a></div></div>
+<header class="hero"><h1>MoonWitch OSINT V100</h1><p>ULTRA PRIME SUITE</p></header>
+<div class="ct">
+<div class="st">
+<div><div class="v">${totalEndpoints}</div><div class="l">ENDPOINTS</div></div>
+<div><div class="v">${totalKeys}</div><div class="l">KEYS</div></div>
+</div>
+<div class="pl"><h3>🧪 API PLAYGROUND</h3><div class="plf"><select id="es"><option value="">Select Endpoint</option>${opts}</select><input id="ak" placeholder="API Key..."><input id="pv" placeholder="Parameter..."><button class="btx" onclick="ta()">⚡ RUN</button></div><div class="rb" id="rb"></div></div>
+<div class="eg">${cardsHTML}</div>
+</div>
+<footer class="ft"><p>MoonWitch OSINT V100 · King Always King</p></footer>
+<script>
 var eps=${epsJSON};
-function toast(m){var t=document.createElement('div');t.style.cssText='position:fixed;bottom:16px;right:16px;background:#0d0d1a;color:#00c8ff;padding:8px 14px;border-radius:8px;font-size:10px;z-index:9999;border:1px solid rgba(139,0,255,.2)';t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove()},2000)}
-function cp(n,p,e){navigator.clipboard.writeText(location.origin+'/api/key-kaddu/'+n+'?key=KEY&'+p+'='+e).then(function(){toast('📋 Copied!')})}
-function ccp(n,p,e){navigator.clipboard.writeText(location.origin+'/api/custom/'+n+'?key=KEY&'+p+'='+e).then(function(){toast('📋 Copied!')})}
-async function ta(){var s=document.getElementById('es'),o=s.options[s.selectedIndex],k=document.getElementById('ak').value,v=document.getElementById('pv').value,rb=document.getElementById('rb');if(!s.value||!k||!v){toast('⚠ Fill all fields');return}var url=o.dataset.c==='1'?'/api/custom/'+o.dataset.ep+'?key='+k+'&'+o.dataset.p+'='+v:'/api/key-kaddu/'+s.value+'?key='+k+'&'+eps[s.value].p+'='+v;rb.style.display='block';rb.style.color='#00ff88';rb.textContent='⏳ Loading...';try{var r=await fetch(url);var d=await r.json();rb.textContent=JSON.stringify(d,null,2);if(d.error)rb.style.color='#ff0080'}catch(e){rb.textContent='Error: '+e.message;rb.style.color='#ff0080'}}
-for(var i=0;i<30;i++){var sf=document.createElement('div');sf.className='snowflake';sf.style.left=Math.random()*100+'%';sf.style.animationDelay=Math.random()*10+'s';sf.style.animationDuration=(5+Math.random()*10)+'s';sf.style.width=sf.style.height=(2+Math.random()*3)+'px';document.getElementById('snow').appendChild(sf)}
+function toast(m){alert(m)}
+function cp(n,p,e){navigator.clipboard.writeText(location.origin+'/api/key-kaddu/'+n+'?key=KEY&'+p+'='+e).then(function(){toast('Copied!')})}
+function ccp(n,p,e){navigator.clipboard.writeText(location.origin+'/api/custom/'+n+'?key=KEY&'+p+'='+e).then(function(){toast('Copied!')})}
+async function ta(){var s=document.getElementById('es').value,o=document.getElementById('es').options[document.getElementById('es').selectedIndex],k=document.getElementById('ak').value,v=document.getElementById('pv').value,rb=document.getElementById('rb');if(!s||!k||!v){toast('Fill all fields');return}var url=o.dataset.c==='1'?'/api/custom/'+o.dataset.ep+'?key='+k+'&'+o.dataset.p+'='+v:'/api/key-kaddu/'+s+'?key='+k+'&'+eps[s].p+'='+v;rb.style.display='block';rb.textContent='Loading...';try{var r=await fetch(url);var d=await r.json();rb.textContent=JSON.stringify(d,null,2)}catch(e){rb.textContent='Error: '+e.message}}
 </script></body></html>`}catch(e){return '<html><body><h1>Error</h1></body></html>'}}
 
 (async function(){const loaded=await loadFromStorage();if(!loaded){initDefaultData();initCustomAPIs()}if(!keyStorage[MASTER_API_KEY])keyStorage[MASTER_API_KEY]=createMasterKey();delete keyStorage['MOONWITCH_MASTER_2026'];scheduleSave();console.log('✅ MoonWitch OSINT V100 ULTRA PRIME Ready! Keys:',Object.keys(keyStorage).length)})();
